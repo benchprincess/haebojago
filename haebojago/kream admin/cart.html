@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <title>ICE CREAM 장바구니</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <style>
+        body {
+            color: #212529;
+            font-weight: bold;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        #footer {
+            background-color: black;
+            padding: 10px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .checkout-btn {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h3 class="mt-5 mb-3">장바구니</h3>
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>카테고리</th>
+                    <th>브랜드</th>
+                    <th>상품명</th>
+                    <th>가격</th>
+                    <th>성별</th>
+                </tr>
+            </thead>
+            <tbody id="cart-table">
+                <!-- 장바구니 아이템이 여기에 표시됩니다 -->
+            </tbody>
+        </table>
+
+        <button class="btn btn-success checkout-btn" onclick="checkout()">결제하기</button>
+    </div>
+
+    <script>
+        function displayCartItems() {
+            const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+            const cartTable = document.getElementById('cart-table');
+
+            // 기존 행 삭제
+            cartTable.innerHTML = '';
+
+            // 장바구니 아이템 표시
+            cartItems.forEach(item => {
+                const row = cartTable.insertRow();
+                row.insertCell(0).innerHTML = item.category;
+                row.insertCell(1).innerHTML = item.brand;
+                row.insertCell(2).innerHTML = item.product;
+                row.insertCell(3).innerHTML = item.price;
+                row.insertCell(4).innerHTML = item.gender;
+            });
+        }
+
+        // 페이지 로드시 장바구니 아이템 표시
+        displayCartItems();
+
+        function checkout() {
+            // 여기서 결제 로직을 구현할 수 있습니다.
+            // 이동하는 부분 추가
+            window.location.href = 'pay.html';
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <title>ICE CREAM Admin Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <style>
+        body {
+            color: white;
+            font-weight: bold;
+        }
+
+        #footer {
+            background-color: black;
+            padding: 10px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .github-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .cart-icon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 1;
+        }
+
+        .gap-between {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-3">
+        <h3 class="mt-5 mb-3"> 베스트 상품 (2024 1월 week1)</h3>
+        <form class="row row-cols-lg-auto g-3 align-items-center" onsubmit="return false;">
+            <!-- 전체 선택 체크박스 -->
+            <div class="col-auto">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="selectAllCheckbox" onclick="selectAllCheckboxes()">
+                    <label class="form-check-label" for="selectAllCheckbox">전체 선택</label>
+                </div>
+            </div>
+            <!-- 카테고리 선택 -->
+            <div class="col-12">
+                <label class="visually-hidden" for="categorySelect">카테고리</label>
+                <div class="input-group">
+                    <select class="form-select" id="categorySelect">
+                        <option value="all">전체</option>
+                        <option value="tops">상의</option>
+                        <option value="bottoms">하의</option>
+                        <option value="shoes">신발</option>
+                        <option value="accessories">패션잡화</option>
+                    </select>
+                </div>
+            </div>
+            <!-- 성별 선택 -->
+            <div class="col-3">
+                <label class="visually-hidden" for="genderSelect">성별</label>
+                <div class="input-group">
+                    <select class="form-select" id="genderSelect">
+                        <option value="all">성별</option>
+                        <option value="male">남성</option>
+                        <option value="female">여성</option>
+                    </select>
+                </div>
+            </div>
+            <!-- 장바구니 아이콘 -->
+            <a href="cart.html" class="cart-icon">
+                <img src="cartIcon.png" alt="장바구니" style="width: 30px; height: 30px;">
+            </a>
+            <!-- 제품명 입력 -->
+            <div class="col-3">
+                <label class="visually-hidden" for="productNameInput">제품명</label>
+                <input type="text" class="form-control" id="productNameInput" placeholder="제품명을 입력해주세요">
+            </div>
+            <!-- 조회 버튼 -->
+            <div class="col-auto">
+                <button type="button" class="btn btn-primary" onclick="filterProducts()">조회</button>
+            </div>
+            <!-- 선택 삭제 버튼 -->
+            <div class="col-auto">
+                <button type="button" class="btn btn-danger" onclick="deleteSelectedCheckbox()">선택 삭제</button>
+            </div>
+        </form>
+        <div class="container mt-3">
+            <!-- 데이터 표시 테이블 -->
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>선택</th>
+                        <th>카테고리</th>
+                        <th>브랜드</th>
+                        <th>상품명</th>
+                        <th>가격</th>
+                        <th>성별</th>
+                    </tr>
+                </thead>
+                <tbody id="data-table">
+                    <!-- 각 아이템별로 체크박스 추가 -->
+                </tbody>
+            </table>
+        </div>
+        <!-- 장바구니 추가 버튼 -->
+        <div class="row mt-3 gap-between">
+            <div class="col-12 text-end">
+                <button type="button" class="btn btn-success" onclick="addToCartSelected()">장바구니 추가</button>
+            </div>
+        </div>
+        <!-- 페이지 네비게이션 -->
+        <nav aria-label="Page navigation mt-3">
+            <ul class="pagination justify-content-end">
+                <li class="page-item disabled">
+                    <span class="page-link">이전</span>
+                </li>
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">1</span>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#">2</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#">3</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#">다음</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <!-- GitHub 이미지와 링크 -->
+    <a href="https://github.com/benchprincess?tab=repositories" class="github-link">
+        <img src="githubIcon.png" alt="GitHub" style="width: 50px; height: 50px;">
+    </a>
+
+    <!-- 하단 저작권 정보 -->
+    <div id="footer">
+        © 2024 ICE CREAM All Rights Reserved
+    </div>
+    <script>
+        const data = [
+            { category: "tops", brand: 'Supreme', product: '슈프림 박스로고 후드티', price: '390,000', gender: 'male' },
+            { category: "tops", brand: 'Adidas', product: '아디다스 져지', price: '180,000', gender: 'male' },
+            { category: "tops", brand: 'Nike', product: '나이키 후드티', price: '90,000', gender: 'female' },
+            { category: "bottoms", brand: 'DIESEL', product: '디젤 트랙 팬츠', price: '188,000', gender: 'male' },
+            { category: "bottoms", brand: 'Nerdy', product: '널디 조거 팬츠', price: '98,000', gender: 'female' },
+            { category: "bottoms", brand: 'FILA', product: '휠라 레깅스', price: '109,000', gender: 'female' },
+            { category: "shoes", brand: 'Nike', product: '에어포스 1', price: '139,000', gender: 'female' },
+            { category: "shoes", brand: 'Adidas', product: '아디다스 슈퍼스타', price: '137,000', gender: 'male' },
+            { category: "shoes", brand: 'MLB', product: 'MLB 청키 라이너', price: '95,000', gender: 'female' },
+            { category: "accessories", brand: 'Music&Goods', product: '빵빵이 키링', price: '29,000', gender: 'female' },
+            { category: "accessories", brand: 'Music&Goods', product: '망그러진곰 키링', price: '39,000', gender: 'male' },
+            { category: "accessories", brand: 'Music&Goods', product: '사토루 키링', price: '99,000', gender: 'female' },
+        ];
+
+        const dataTable = document.getElementById('data-table');
+
+        function renderTable(filteredData) {
+            dataTable.innerHTML = '';
+            filteredData.forEach((item, index) => {
+                const row = dataTable.insertRow();
+                row.insertCell(0).innerHTML = `<input type="checkbox" id="checkbox-${index}">`;
+                row.insertCell(1).innerHTML = item.category;
+                row.insertCell(2).innerHTML = item.brand;
+                row.insertCell(3).innerHTML = item.product;
+                row.insertCell(4).innerHTML = item.price;
+                row.insertCell(5).innerHTML = item.gender;
+            });
+        }
+
+        function addToCartSelected() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        const selectedItems = [];
+
+        checkboxes.forEach((checkbox, index) => {
+            if (checkbox.checked) {
+                selectedItems.push(data[index]);
+            }
+        });
+
+        if (selectedItems.length > 0) {
+            const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+            cartItems.push(...selectedItems);
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+            alert('장바구니에 상품이 추가되었습니다.');
+        } else {
+            alert('선택된 상품이 없습니다. 체크박스를 선택해주세요.');
+        }
+
+        // 장바구니에 추가한 후에 displayCartItems 함수를 호출하여 표시
+        displayCartItems();
+    }
+
+        function filterProducts() {
+            const categoryFilter = document.getElementById('categorySelect').value;
+            const genderFilter = document.getElementById('genderSelect').value;
+            const productNameFilter = document.getElementById('productNameInput').value.toLowerCase();
+
+            console.log("Category Filter:", categoryFilter);
+            console.log("Gender Filter:", genderFilter);
+            console.log("Product Name Filter:", productNameFilter);
+
+            const filteredData = data.filter((item) => {
+                const matchCategory = categoryFilter === 'all' || item.category === categoryFilter;
+                const matchGender = genderFilter === 'all' || item.gender === genderFilter;
+                const matchProductName = productNameFilter === '' || item.product.toLowerCase().includes(productNameFilter);
+
+                return matchCategory && matchGender && matchProductName;
+            });
+
+            console.log("Filtered Data:", filteredData);
+
+            renderTable(filteredData);
+            return false;
+        }
+
+        function deleteSelectedCheckbox() {
+            alert('상품을 선택 삭제합니다.');
+        }
+
+        function goToCart() {
+            alert('장바구니 페이지로 이동합니다.');
+        }
+
+        function scrollToCart() {
+            document.querySelector('.row mt-3').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function selectAllCheckboxes() {
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            
+            checkboxes.forEach((checkbox) => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
