@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <title>핑크 공주의 쇼핑목록</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='bootstrap.min.css') }}"
+    />
+    <style>
+      body {
+        color: white;
+        font-weight: bold;
+      }
+
+      #footer {
+        background-color: black;
+        padding: 10px;
+        text-align: center;
+        color: white;
+        font-weight: bold;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+      }
+
+      .github-link {
+        display: block;
+        text-align: center;
+        margin-top: 15px;
+      }
+
+      .cart-icon {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        z-index: 1;
+      }
+
+      .gap-between {
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container mt-3">
+      <h3 class="mt-5 mb-3">"핑크공주들이 고른 핑크제품 인기순" (2024 1월)</h3>
+      <form
+        class="row row-cols-lg-auto g-3 align-items-center"
+        onsubmit="return false;"
+      >
+        <!-- 전체 선택 체크박스 -->
+        <div class="col-auto">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="selectAllCheckbox"
+              onclick="selectAllCheckboxes()"
+            />
+            <label class="form-check-label" for="selectAllCheckbox"
+              >전체 선택</label
+            >
+          </div>
+        </div>
+        <!-- 카테고리 선택 -->
+        <div class="col-12">
+          <label class="visually-hidden" for="categorySelect">카테고리</label>
+          <div class="input-group">
+            <select
+              class="form-select"
+              id="categorySelect"
+              name="categoryFilter"
+            >
+              <option value="all">전체</option>
+              <option value="tops">상의</option>
+              <option value="bottoms">하의</option>
+              <option value="shoes">신발</option>
+              <option value="accessories">패션잡화</option>
+            </select>
+          </div>
+        </div>
+        <!-- 성별 선택 -->
+        <div class="col-3">
+          <label class="visually-hidden" for="genderSelect">성별</label>
+          <div class="input-group">
+            <select class="form-select" id="genderSelect" name="genderFilter">
+              <option value="all">성별</option>
+              <option value="male">남성</option>
+              <option value="female">여성</option>
+            </select>
+          </div>
+        </div>
+        <!-- 장바구니 아이콘 -->
+        <a href="cart.html" class="cart-icon">
+          <img
+            src="../templates/cartIcon.png"
+            alt="장바구니"
+            style="width: 30px; height: 30px"
+          />
+        </a>
+        <!-- 제품명 입력 -->
+        <div class="col-3">
+          <label class="visually-hidden" for="productNameInput">제품명</label>
+          <input
+            type="text"
+            class="form-control"
+            id="productNameInput"
+            placeholder="제품명을 입력해주세요"
+          />
+        </div>
+        <!-- 조회 버튼 -->
+        <div class="col-auto">
+          <button
+            type="button"
+            class="btn btn-primary"
+            onclick="filterProducts()"
+          >
+            조회
+          </button>
+        </div>
+        <!-- 선택 삭제 버튼 -->
+        <div class="col-auto">
+          <button
+            type="button"
+            class="btn btn-danger"
+            onclick="deleteSelectedCheckbox()"
+          >
+            선택 삭제
+          </button>
+        </div>
+      </form>
+      <div class="container mt-3">
+        <table id="data-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>브랜드</th>
+              <th>제품명</th>
+              <th>가격</th>
+              <th>저장</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in data %}
+            <tr>
+              <td><input type="checkbox" /></td>
+              <td><span style="color: black">{{ item['brand'] }}</span></td>
+              <td><span style="color: black">{{ item['name'] }}</span></td>
+              <td><span style="color: black">{{ item['price'] }}</span></td>
+              <td><span style="color: black">{{ item['wish'] }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <!-- 장바구니 추가 버튼 -->
+      <div class="row mt-3 gap-between">
+        <div class="col-12 text-end">
+          <button
+            type="button"
+            class="btn btn-success"
+            onclick="addToCartSelected()"
+          >
+            장바구니 추가
+          </button>
+        </div>
+      </div>
+      <!-- 페이지 네비게이션 -->
+      <nav aria-label="Page navigation mt-3">
+        <ul class="pagination justify-content-end">
+          <li class="page-item disabled">
+            <span class="page-link">이전</span>
+          </li>
+          <li class="page-item active" aria-current="page">
+            <span class="page-link">1</span>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="#">2</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="#">3</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="#">다음</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    <!-- GitHub 이미지와 링크 -->
+    <a
+      href="https://github.com/benchprincess?tab=repositories"
+      class="github-link"
+    >
+      <img
+        src="../templates/githubIcon.png"
+        alt="GitHub"
+        style="width: 50px; height: 50px"
+      />
+    </a>
+
+    <!-- 하단 저작권 정보 -->
+    <div
+      id="no-data-message"
+      style="display: none; color: red; margin-top: 10px"
+    >
+      No data available
+    </div>
+
+    <script>
+      fetch("/get_data_endpoint")
+        .then((response) => response.json())
+        .then((data) => {
+          // 가져온 데이터를 변수에 저장
+          const jsonData = data;
+
+          const dataTable = document.getElementById("data-table");
+          const noDataMessage = document.getElementById("no-data-message");
+
+          function renderTable(filteredData) {
+            dataTable.innerHTML = "";
+            if (filteredData.length === 0) {
+              noDataMessage.style.display = "block";
+              return;
+            }
+
+            noDataMessage.style.display = "none";
+
+            filteredData.forEach((item, index) => {
+              const row = dataTable.insertRow();
+              row.insertCell(
+                0
+              ).innerHTML = `<input type="checkbox" id="checkbox-${index}">`;
+              row.insertCell(1).innerHTML = item.brand;
+              row.insertCell(2).innerHTML = item.name;
+              row.insertCell(3).innerHTML = item.price;
+              row.insertCell(4).innerHTML = item.wish;
+            });
+          }
+
+          function addToCartSelected() {
+            // 이 부분에서 data를 정의
+            const data = jsonData;
+            const checkboxes = document.querySelectorAll(
+              'input[type="checkbox"]'
+            );
+            const selectedItems = [];
+
+            checkboxes.forEach((checkbox, index) => {
+              if (checkbox.checked) {
+                selectedItems.push(data[index]);
+              }
+            });
+
+            if (selectedItems.length > 0) {
+              const cartItems =
+                JSON.parse(localStorage.getItem("cartItems")) || [];
+              cartItems.push(...selectedItems);
+              localStorage.setItem("cartItems", JSON.stringify(cartItems));
+              alert("장바구니에 상품이 추가되었습니다.");
+            } else {
+              alert("선택된 상품이 없습니다. 체크박스를 선택해주세요.");
+            }
+
+            // displayCartItems 함수가 정의되어 있다면 호출
+            if (typeof displayCartItems === "function") {
+              displayCartItems();
+            }
+          }
+
+          renderTable(jsonData);
+        });
+
+      function addToCartSelected() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        const selectedItems = [];
+
+        checkboxes.forEach((checkbox, index) => {
+          if (checkbox.checked) {
+            selectedItems.push(data[index]);
+          }
+        });
+
+        if (selectedItems.length > 0) {
+          const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+          cartItems.push(...selectedItems);
+          localStorage.setItem("cartItems", JSON.stringify(cartItems));
+          alert("장바구니에 상품이 추가되었습니다.");
+        } else {
+          alert("선택된 상품이 없습니다. 체크박스를 선택해주세요.");
+        }
+
+        // displayCartItems 함수가 정의되어 있다면 호출
+        if (typeof displayCartItems === "function") {
+          displayCartItems();
+        }
+      }
+
+      function filterProducts() {
+        const categoryFilter = document.getElementById("categorySelect").value;
+        const genderFilter = document.getElementById("genderSelect").value;
+        const productNameFilter = document
+          .getElementById("productNameInput")
+          .value.toLowerCase();
+
+        console.log("Category Filter:", categoryFilter);
+        console.log("Gender Filter:", genderFilter);
+        console.log("Product Name Filter:", productNameFilter);
+
+        const filteredData = data.filter((item) => {
+          const matchCategory =
+            categoryFilter === "all" || item.category === categoryFilter;
+          const matchGender =
+            genderFilter === "all" || item.gender === genderFilter;
+          const matchProductName =
+            productNameFilter === "" ||
+            item.name.toLowerCase().includes(productNameFilter);
+
+          // 여성인 경우에만 (W)가 들어간 제품 표시
+          const matchFemaleProduct =
+            genderFilter === "female"
+              ? item.name.toLowerCase().includes("(w)")
+              : true;
+
+          return (
+            matchCategory &&
+            matchGender &&
+            matchProductName &&
+            matchFemaleProduct
+          );
+        });
+
+        console.log("Filtered Data:", filteredData);
+
+        renderTable(filteredData);
+        return false;
+      }
+
+      function deleteSelectedCheckbox() {
+        alert("상품을 선택 삭제합니다.");
+      }
+
+      function goToCart() {
+        alert("장바구니 페이지로 이동합니다.");
+      }
+
+      function scrollToCart() {
+        document
+          .querySelector(".row mt-3")
+          .scrollIntoView({ behavior: "smooth" });
+      }
+
+      function selectAllCheckboxes() {
+        const selectAllCheckbox = document.getElementById("selectAllCheckbox");
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+
+        checkboxes.forEach((checkbox) => {
+          checkbox.checked = selectAllCheckbox.checked;
+        });
+      }
+    </script>
+    <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+  </body>
+</html>
