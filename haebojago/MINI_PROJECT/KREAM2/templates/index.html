@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <title>ICE CREAM Admin Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}"></script>
+    <style>
+        body {
+            color: white;
+            font-weight: bold;
+        }
+
+        #footer {
+            background-color: black;
+            padding: 10px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .github-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .cart-icon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 1;
+        }
+
+        .gap-between {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-3">
+        <h3 class="mt-5 mb-3"> 베스트 상품 (2024 2월)</h3>
+        <form class="row row-cols-lg-auto g-3 align-items-center" onsubmit="return false;">
+            <!-- 전체 선택 체크박스 -->
+            <div class="col-auto">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="selectAllCheckbox" onclick="selectAllCheckboxes()">
+                    <label class="form-check-label" for="selectAllCheckbox">전체 선택</label>
+                </div>
+            </div>
+            <!-- 카테고리 선택 -->
+            <div class="col-12">
+                <label class="visually-hidden" for="categorySelect">카테고리</label>
+                <div class="input-group">
+                    <select class="form-select" id="categorySelect">
+                        <option value="all">전체</option>
+                        <option value="tops">상의</option>
+                        <option value="bottoms">하의</option>
+                        <option value="shoes">신발</option>
+                        <option value="bags">가방</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- 장바구니 아이콘 -->
+            <a href="cart.html" class="cart-icon">
+                <img src="../cartIcon.png" alt="장바구니" style="width: 30px; height: 30px;">
+            </a>
+            <!-- 제품명 입력 -->
+            <div class="col-3">
+                <label class="visually-hidden" for="productNameInput">제품명</label>
+                <input type="text" class="form-control" id="productNameInput" placeholder="제품명을 입력해주세요">
+            </div>
+            <!-- 조회 버튼 -->
+            <div class="col-auto">
+                <button type="button" class="btn btn-primary" onclick="filterProducts()">조회</button>
+            </div>
+            <!-- 선택 삭제 버튼 -->
+            <div class="col-auto">
+                <button type="button" class="btn btn-danger" onclick="deleteSelectedCheckbox()">선택 삭제</button>
+            </div>
+        </form>
+        <div class="container mt-3">
+            <!-- 데이터 표시 테이블 -->
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>선택</th>
+                        <th>카테고리</th>
+                        <th>브랜드</th>
+                        <th>상품명</th>
+                        <th>가격</th>
+                        <th>저장</th>
+                        <th>리뷰</th>
+                    </tr>
+                </thead>
+                <tbody id="data-table">
+                    {% if products %} {% for product in products %}
+                    <tr>
+                      <td class="index text-center">{{ loop.index }}</td>
+                      <td class="category text-center" style="width: 100px">{{ product.category }}</td>
+                      <td class="product text-start">{{ product.brand }}</td>
+                      <td class="price text-end">{{ product.name }}</td>
+                      <td class="sales text-end">{{ product.price }}</td>
+                      <td class="review text-end">{{ product.wish }}</td>
+                      <td class="review text-end">{{ product.review }}</td>
+                    </tr>
+                    {% endfor %} {% endif %}
+                  </tbody>
+            </table>
+        </div>
+        <!-- 장바구니 추가 버튼 -->
+        <div class="row mt-3 gap-between">
+            <div class="col-12 text-end">
+                <button type="button" class="btn btn-success" onclick="addToCartSelected()">장바구니 추가</button>
+            </div>
+        </div>
+        
+    <!-- GitHub 이미지와 링크 -->
+    <a href="https://github.com/benchprincess?tab=repositories" class="github-link">
+        <img src="../githubIcon.png" alt="GitHub" style="width: 50px; height: 50px;">
+    </a>
+
+    <!-- 하단 저작권 정보 -->
+    <div id="footer">
+        © 2024 ICE CREAM All Rights Reserved
+    </div>
+    <script>
+        const data = mysql.kream_data
+
+        function renderTable(filteredData) {
+            dataTable.innerHTML = '';
+            filteredData.forEach((item, index) => {
+                const row = dataTable.insertRow();
+                row.insertCell(0).innerHTML = `<input type="checkbox" id="checkbox-${index}">`;
+                row.insertCell(1).innerHTML = item.category;
+                row.insertCell(2).innerHTML = item.brand;
+                row.insertCell(3).innerHTML = item.product;
+                row.insertCell(4).innerHTML = item.price;
+                row.insertCell(5).innerHTML = item.wish;
+                row.insertCell(6).innerHTML = item.review;
+            });
+        }
+
+    //     function addToCartSelected() {
+    //     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    //     const selectedItems = [];
+
+    //     checkboxes.forEach((checkbox, index) => {
+    //         if (checkbox.checked) {
+    //             selectedItems.push(data[index]);
+    //         }
+    //     });
+
+    //     if (selectedItems.length > 0) {
+    //         const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+    //         cartItems.push(...selectedItems);
+    //         localStorage.setItem('cartItems', JSON.stringify(cartItems));
+    //         alert('장바구니에 상품이 추가되었습니다.');
+    //     } else {
+    //         alert('선택된 상품이 없습니다. 상품을 선택해주세요.');
+    //     }
+
+    //     // 장바구니에 추가한 후에 displayCartItems 함수를 호출하여 표시
+    //     displayCartItems();
+    // }
+
+    //     function filterProducts() {
+    //         const categoryFilter = document.getElementById('categorySelect').value;
+    //         const genderFilter = document.getElementById('genderSelect').value;
+    //         const productNameFilter = document.getElementById('productNameInput').value.toLowerCase();
+
+    //         console.log("Category Filter:", categoryFilter);
+    //         console.log("Gender Filter:", genderFilter);
+    //         console.log("Product Name Filter:", productNameFilter);
+
+    //         const filteredData = data.filter((item) => {
+    //             const matchCategory = categoryFilter === 'all' || item.category === categoryFilter;
+    //             const matchGender = genderFilter === 'all' || item.gender === genderFilter;
+    //             const matchProductName = productNameFilter === '' || item.product.toLowerCase().includes(productNameFilter);
+
+    //             return matchCategory && matchGender && matchProductName;
+    //         });
+
+    //         console.log("Filtered Data:", filteredData);
+
+    //         renderTable(filteredData);
+    //         return false;
+    //     }
+
+    //     function deleteSelectedCheckbox() {
+    //         alert('상품을 선택 삭제합니다.');
+    //     }
+
+    //     function goToCart() {
+    //         alert('장바구니 페이지로 이동합니다.');
+    //     }
+
+    //     function scrollToCart() {
+    //         document.querySelector('.row mt-3').scrollIntoView({ behavior: 'smooth' });
+    //     }
+
+    //     function selectAllCheckboxes() {
+    //         const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+    //         const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            
+    //         checkboxes.forEach((checkbox) => {
+    //             checkbox.checked = selectAllCheckbox.checked;
+    //         });
+    //     }
+    // </script>
+    <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+</body>
+
+</html>
